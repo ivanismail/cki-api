@@ -1,4 +1,5 @@
 import os
+from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -14,8 +15,10 @@ if not SQLALCHEMY_DATABASE_URL:
     db_port = os.getenv("DB_PORT", "3306")
     db_name = os.getenv("DB_NAME")
     if db_user and db_password and db_name:
+        # URL encode password to handle special characters like !, @, #
+        encoded_password = quote_plus(db_password)
         SQLALCHEMY_DATABASE_URL = (
-            f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+            f"mysql+pymysql://{db_user}:{encoded_password}@{db_host}:{db_port}/{db_name}"
         )
     else:
         SQLALCHEMY_DATABASE_URL = "sqlite:///./attendance.db"
