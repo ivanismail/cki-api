@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, Enum, Time
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, Enum, Time, Date
 from sqlalchemy.orm import relationship
 from .database import Base
 import datetime
@@ -19,6 +19,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     attendances = relationship("Attendance", back_populates="user")
+    user_shifts = relationship("UserShift", back_populates="user")
 
 class Shift(Base):
     __tablename__ = "shifts"
@@ -31,6 +32,19 @@ class Shift(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     attendances = relationship("Attendance", back_populates="shift")
+    user_shifts = relationship("UserShift", back_populates="shift")
+
+class UserShift(Base):
+    __tablename__ = "user_shifts"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), index=True)
+    shift_id = Column(BigInteger, ForeignKey("shifts.id"), index=True)
+    start_date = Column(Date)
+    end_date = Column(Date)
+
+    user = relationship("User", back_populates="user_shifts")
+    shift = relationship("Shift", back_populates="user_shifts")
 
 class Attendance(Base):
     __tablename__ = "attendances"

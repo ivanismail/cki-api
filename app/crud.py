@@ -38,6 +38,37 @@ def create_shift(db: Session, shift: schemas.ShiftCreate):
     db.refresh(db_shift)
     return db_shift
 
+def create_user_shift(db: Session, user_shift: schemas.UserShiftCreate):
+    db_user_shift = models.UserShift(
+        user_id=user_shift.user_id,
+        shift_id=user_shift.shift_id,
+        start_date=user_shift.start_date,
+        end_date=user_shift.end_date
+    )
+    db.add(db_user_shift)
+    db.commit()
+    db.refresh(db_user_shift)
+    return db_user_shift
+
+def get_user_shift(db: Session, user_shift_id: int):
+    return db.query(models.UserShift).filter(models.UserShift.id == user_shift_id).first()
+
+def get_user_shifts(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.UserShift).offset(skip).limit(limit).all()
+
+def get_user_shifts_by_user(db: Session, user_id: int):
+    return db.query(models.UserShift).filter(models.UserShift.user_id == user_id).all()
+
+def get_user_shifts_by_shift(db: Session, shift_id: int):
+    return db.query(models.UserShift).filter(models.UserShift.shift_id == shift_id).all()
+
+def delete_user_shift(db: Session, user_shift_id: int):
+    db_user_shift = db.query(models.UserShift).filter(models.UserShift.id == user_shift_id).first()
+    if db_user_shift:
+        db.delete(db_user_shift)
+        db.commit()
+    return db_user_shift
+
 def get_attendances(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Attendance).offset(skip).limit(limit).all()
 

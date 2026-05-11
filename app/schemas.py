@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime, time
+from datetime import datetime, time, date
 from enum import Enum
 
 class RoleEnum(str, Enum):
@@ -35,6 +35,21 @@ class ShiftCreate(ShiftBase):
 class Shift(ShiftBase):
     id: int
     created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class UserShiftBase(BaseModel):
+    user_id: int
+    shift_id: int
+    start_date: date
+    end_date: date
+
+class UserShiftCreate(UserShiftBase):
+    pass
+
+class UserShift(UserShiftBase):
+    id: int
 
     class Config:
         orm_mode = True

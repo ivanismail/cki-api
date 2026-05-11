@@ -42,6 +42,29 @@ def read_shift(shift_id: int, db: Session = Depends(get_db)):
     shift = crud.get_shift(db, shift_id=shift_id)
     return shift
 
+@app.post("/user_shifts/", response_model=schemas.UserShift)
+def create_user_shift(user_shift: schemas.UserShiftCreate, db: Session = Depends(get_db)):
+    return crud.create_user_shift(db=db, user_shift=user_shift)
+
+@app.get("/user_shifts/", response_model=List[schemas.UserShift])
+def read_user_shifts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    user_shifts = crud.get_user_shifts(db, skip=skip, limit=limit)
+    return user_shifts
+
+@app.get("/user_shifts/user/{user_id}", response_model=List[schemas.UserShift])
+def read_user_shifts_by_user(user_id: int, db: Session = Depends(get_db)):
+    user_shifts = crud.get_user_shifts_by_user(db, user_id=user_id)
+    return user_shifts
+
+@app.get("/user_shifts/shift/{shift_id}", response_model=List[schemas.UserShift])
+def read_user_shifts_by_shift(shift_id: int, db: Session = Depends(get_db)):
+    user_shifts = crud.get_user_shifts_by_shift(db, shift_id=shift_id)
+    return user_shifts
+
+@app.delete("/user_shifts/{user_shift_id}")
+def delete_user_shift(user_shift_id: int, db: Session = Depends(get_db)):
+    return crud.delete_user_shift(db=db, user_shift_id=user_shift_id)
+
 @app.post("/attendances/", response_model=schemas.Attendance)
 def create_attendance(attendance: schemas.AttendanceCreate, db: Session = Depends(get_db)):
     return crud.create_attendance(db=db, attendance=attendance)
