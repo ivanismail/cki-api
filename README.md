@@ -10,7 +10,25 @@ A FastAPI-based attendance system.
 
 3. Install dependencies: `pip install -r requirements.txt`
 
-4. Run the server: `uvicorn app.main:app --reload` or use VS Code task "Run FastAPI Server"
+4. Create a `.env` file with your MySQL connection string or MySQL credentials.
+
+   Either:
+
+   ```
+   SQLALCHEMY_DATABASE_URL=mysql+pymysql://username:password@hostname:3306/database_name
+   ```
+
+   Or:
+
+   ```
+   DB_USER=username
+   DB_PASSWORD=password
+   DB_HOST=hostname
+   DB_PORT=3306
+   DB_NAME=database_name
+   ```
+
+5. Run the server: `uvicorn app.main:app --reload` or use VS Code task "Run FastAPI Server"
 
 ## API Endpoints
 

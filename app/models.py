@@ -1,14 +1,22 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, Enum
 from sqlalchemy.orm import relationship
 from .database import Base
 import datetime
+import enum
+
+class RoleEnum(enum.Enum):
+    admin = "admin"
+    employee = "employee"
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    email = Column(String, unique=True, index=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True, index=True)
+    name = Column(String(100), index=True)
+    email = Column(String(100), unique=True, index=True)
+    password = Column(String(255))
+    role = Column(Enum(RoleEnum), default=RoleEnum.employee)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     attendances = relationship("Attendance", back_populates="user")
 
