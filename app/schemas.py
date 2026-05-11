@@ -14,6 +14,10 @@ class AttendanceStatus(str, Enum):
     absent = "absent"
     leave = "leave"
 
+class AttendanceLogAction(str, Enum):
+    check_in = "check_in"
+    check_out = "check_out"
+
 class UserBase(BaseModel):
     name: str
     email: str
@@ -79,6 +83,24 @@ class AttendanceCreate(AttendanceBase):
     pass
 
 class Attendance(AttendanceBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class AttendanceLogBase(BaseModel):
+    user_id: int
+    action: AttendanceLogAction
+    time: datetime
+    lat: Optional[Decimal] = None
+    lng: Optional[Decimal] = None
+    device_info: Optional[str] = None
+
+class AttendanceLogCreate(AttendanceLogBase):
+    pass
+
+class AttendanceLog(AttendanceLogBase):
     id: int
     created_at: datetime
 

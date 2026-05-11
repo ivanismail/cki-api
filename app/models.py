@@ -14,6 +14,10 @@ class AttendanceStatus(enum.Enum):
     absent = "absent"
     leave = "leave"
 
+class AttendanceLogAction(enum.Enum):
+    check_in = "check_in"
+    check_out = "check_out"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -26,6 +30,7 @@ class User(Base):
 
     attendances = relationship("Attendance", back_populates="user")
     user_shifts = relationship("UserShift", back_populates="user")
+    attendance_logs = relationship("AttendanceLog", back_populates="user")
 
 class Shift(Base):
     __tablename__ = "shifts"
@@ -73,3 +78,17 @@ class Attendance(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", back_populates="attendances")
+
+class AttendanceLog(Base):
+    __tablename__ = "attendance_logs"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), index=True)
+    action = Column(Enum(AttendanceLogAction))
+    time = Column(DateTime)
+    lat = Column(Numeric(10, 6), nullable=True)
+    lng = Column(Numeric(10, 6), nullable=True)
+    device_info = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    user = relationship("User", back_populates="attendance_logs")

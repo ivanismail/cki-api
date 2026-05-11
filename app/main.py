@@ -83,3 +83,21 @@ def read_attendance_by_user_date(user_id: int, date: str, db: Session = Depends(
     from datetime import datetime as dt
     attendance_date = dt.strptime(date, "%Y-%m-%d").date()
     return crud.get_attendance_by_user_date(db, user_id=user_id, date_val=attendance_date)
+
+@app.post("/attendance_logs/", response_model=schemas.AttendanceLog)
+def create_attendance_log(log: schemas.AttendanceLogCreate, db: Session = Depends(get_db)):
+    return crud.create_attendance_log(db=db, log=log)
+
+@app.get("/attendance_logs/", response_model=List[schemas.AttendanceLog])
+def read_attendance_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    logs = crud.get_attendance_logs(db, skip=skip, limit=limit)
+    return logs
+
+@app.get("/attendance_logs/user/{user_id}", response_model=List[schemas.AttendanceLog])
+def read_attendance_logs_by_user(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    logs = crud.get_attendance_logs_by_user(db, user_id=user_id, skip=skip, limit=limit)
+    return logs
+
+@app.get("/attendance_logs/{log_id}", response_model=schemas.AttendanceLog)
+def read_attendance_log(log_id: int, db: Session = Depends(get_db)):
+    return crud.get_attendance_log(db, log_id=log_id)

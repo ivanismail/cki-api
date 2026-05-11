@@ -111,3 +111,26 @@ def get_attendance_by_user_date(db: Session, user_id: int, date_val: datetime.da
         models.Attendance.user_id == user_id,
         models.Attendance.date == date_val
     ).first()
+
+def create_attendance_log(db: Session, log: schemas.AttendanceLogCreate):
+    db_log = models.AttendanceLog(
+        user_id=log.user_id,
+        action=log.action,
+        time=log.time,
+        lat=log.lat,
+        lng=log.lng,
+        device_info=log.device_info
+    )
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log
+
+def get_attendance_logs(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.AttendanceLog).offset(skip).limit(limit).all()
+
+def get_attendance_logs_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.AttendanceLog).filter(models.AttendanceLog.user_id == user_id).offset(skip).limit(limit).all()
+
+def get_attendance_log(db: Session, log_id: int):
+    return db.query(models.AttendanceLog).filter(models.AttendanceLog.id == log_id).first()
