@@ -70,10 +70,16 @@ def create_attendance(attendance: schemas.AttendanceCreate, db: Session = Depend
     return crud.create_attendance(db=db, attendance=attendance)
 
 @app.put("/attendances/{attendance_id}/check_out", response_model=schemas.Attendance)
-def check_out(attendance_id: int, db: Session = Depends(get_db)):
-    return crud.update_attendance_check_out(db=db, attendance_id=attendance_id)
+def check_out(attendance_id: int, check_out_lat: float = None, check_out_lng: float = None, check_out_photo: str = None, db: Session = Depends(get_db)):
+    return crud.update_attendance_check_out(db=db, attendance_id=attendance_id, check_out_lat=check_out_lat, check_out_lng=check_out_lng, check_out_photo=check_out_photo)
 
 @app.get("/attendances/", response_model=List[schemas.Attendance])
 def read_attendances(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     attendances = crud.get_attendances(db, skip=skip, limit=limit)
     return attendances
+
+@app.get("/attendances/{user_id}/{date}", response_model=schemas.Attendance)
+def read_attendance_by_user_date(user_id: int, date: str, db: Session = Depends(get_db)):
+    from datetime import datetime as dt
+    attendance_date = dt.strptime(date, "%Y-%m-%d").date()
+    return crud.get_attendance_by_user_date(db, user_id=user_id, date_val=attendance_date)

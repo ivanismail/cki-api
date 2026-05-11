@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, Enum, Time, Date
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, Enum, Time, Date, Numeric, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .database import Base
 import datetime
@@ -7,6 +7,12 @@ import enum
 class RoleEnum(enum.Enum):
     admin = "admin"
     employee = "employee"
+
+class AttendanceStatus(enum.Enum):
+    present = "present"
+    late = "late"
+    absent = "absent"
+    leave = "leave"
 
 class User(Base):
     __tablename__ = "users"
@@ -31,7 +37,6 @@ class Shift(Base):
     late_tolerance = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    attendances = relationship("Attendance", back_populates="shift")
     user_shifts = relationship("UserShift", back_populates="shift")
 
 class UserShift(Base):
@@ -48,13 +53,23 @@ class UserShift(Base):
 
 class Attendance(Base):
     __tablename__ = "attendances"
+    __table_args__ = (
+        UniqueConstraint('user_id', 'date', name='unique_attendance'),
+    )
 
     id = Column(BigInteger, primary_key=True, autoincrement=True, index=True)
     user_id = Column(BigInteger, ForeignKey("users.id"), index=True)
-    shift_id = Column(BigInteger, ForeignKey("shifts.id"), index=True)
-    check_in = Column(DateTime, default=datetime.datetime.utcnow)
+    date = Column(Date, index=True)
+    check_in = Column(DateTime, nullable=True)
     check_out = Column(DateTime, nullable=True)
+    status = Column(Enum(AttendanceStatus), default=AttendanceStatus.present)
+    check_in_lat = Column(Numeric(10, 6), nullable=True)
+    check_in_lng = Column(Numeric(10, 6), nullable=True)
+    check_out_lat = Column(Numeric(10, 6), nullable=True)
+    check_out_lng = Column(Numeric(10, 6), nullable=True)
+    check_in_photo = Column(String(255), nullable=True)
+    check_out_photo = Column(String(255), nullable=True)
+    note = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", back_populates="attendances")
-    shift = relationship("Shift", back_populates="attendances")

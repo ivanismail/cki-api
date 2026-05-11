@@ -2,10 +2,17 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, time, date
 from enum import Enum
+from decimal import Decimal
 
 class RoleEnum(str, Enum):
     admin = "admin"
     employee = "employee"
+
+class AttendanceStatus(str, Enum):
+    present = "present"
+    late = "late"
+    absent = "absent"
+    leave = "leave"
 
 class UserBase(BaseModel):
     name: str
@@ -56,15 +63,23 @@ class UserShift(UserShiftBase):
 
 class AttendanceBase(BaseModel):
     user_id: int
-    shift_id: int
+    date: date
+    check_in: Optional[datetime] = None
+    check_out: Optional[datetime] = None
+    status: AttendanceStatus = AttendanceStatus.present
+    check_in_lat: Optional[Decimal] = None
+    check_in_lng: Optional[Decimal] = None
+    check_out_lat: Optional[Decimal] = None
+    check_out_lng: Optional[Decimal] = None
+    check_in_photo: Optional[str] = None
+    check_out_photo: Optional[str] = None
+    note: Optional[str] = None
 
 class AttendanceCreate(AttendanceBase):
     pass
 
 class Attendance(AttendanceBase):
     id: int
-    check_in: datetime
-    check_out: Optional[datetime]
     created_at: datetime
 
     class Config:

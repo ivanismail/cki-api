@@ -75,17 +75,39 @@ def get_attendances(db: Session, skip: int = 0, limit: int = 100):
 def create_attendance(db: Session, attendance: schemas.AttendanceCreate):
     db_attendance = models.Attendance(
         user_id=attendance.user_id,
-        shift_id=attendance.shift_id
+        date=attendance.date,
+        check_in=attendance.check_in,
+        check_out=attendance.check_out,
+        status=attendance.status,
+        check_in_lat=attendance.check_in_lat,
+        check_in_lng=attendance.check_in_lng,
+        check_out_lat=attendance.check_out_lat,
+        check_out_lng=attendance.check_out_lng,
+        check_in_photo=attendance.check_in_photo,
+        check_out_photo=attendance.check_out_photo,
+        note=attendance.note
     )
     db.add(db_attendance)
     db.commit()
     db.refresh(db_attendance)
     return db_attendance
 
-def update_attendance_check_out(db: Session, attendance_id: int):
+def update_attendance_check_out(db: Session, attendance_id: int, check_out_lat: float = None, check_out_lng: float = None, check_out_photo: str = None):
     db_attendance = db.query(models.Attendance).filter(models.Attendance.id == attendance_id).first()
     if db_attendance:
         db_attendance.check_out = datetime.datetime.utcnow()
+        if check_out_lat:
+            db_attendance.check_out_lat = check_out_lat
+        if check_out_lng:
+            db_attendance.check_out_lng = check_out_lng
+        if check_out_photo:
+            db_attendance.check_out_photo = check_out_photo
         db.commit()
         db.refresh(db_attendance)
     return db_attendance
+
+def get_attendance_by_user_date(db: Session, user_id: int, date_val: datetime.date):
+    return db.query(models.Attendance).filter(
+        models.Attendance.user_id == user_id,
+        models.Attendance.date == date_val
+    ).first()
