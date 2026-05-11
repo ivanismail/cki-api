@@ -28,6 +28,20 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
+@app.post("/shifts/", response_model=schemas.Shift)
+def create_shift(shift: schemas.ShiftCreate, db: Session = Depends(get_db)):
+    return crud.create_shift(db=db, shift=shift)
+
+@app.get("/shifts/", response_model=List[schemas.Shift])
+def read_shifts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    shifts = crud.get_shifts(db, skip=skip, limit=limit)
+    return shifts
+
+@app.get("/shifts/{shift_id}", response_model=schemas.Shift)
+def read_shift(shift_id: int, db: Session = Depends(get_db)):
+    shift = crud.get_shift(db, shift_id=shift_id)
+    return shift
+
 @app.post("/attendances/", response_model=schemas.Attendance)
 def create_attendance(attendance: schemas.AttendanceCreate, db: Session = Depends(get_db)):
     return crud.create_attendance(db=db, attendance=attendance)
