@@ -18,6 +18,16 @@ class AttendanceLogAction(enum.Enum):
     check_in = "check_in"
     check_out = "check_out"
 
+class LeaveRequestType(enum.Enum):
+    sick = "sick"
+    leave = "leave"
+    permission = "permission"
+
+class LeaveRequestStatus(enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -31,6 +41,7 @@ class User(Base):
     attendances = relationship("Attendance", back_populates="user")
     user_shifts = relationship("UserShift", back_populates="user")
     attendance_logs = relationship("AttendanceLog", back_populates="user")
+    leave_requests = relationship("LeaveRequest", back_populates="user")
 
 class Shift(Base):
     __tablename__ = "shifts"
@@ -92,3 +103,18 @@ class AttendanceLog(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", back_populates="attendance_logs")
+
+class LeaveRequest(Base):
+    __tablename__ = "leave_requests"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), index=True)
+    start_date = Column(Date)
+    end_date = Column(Date)
+    type = Column(Enum(LeaveRequestType))
+    reason = Column(Text)
+    status = Column(Enum(LeaveRequestStatus), default=LeaveRequestStatus.pending)
+    approved_by = Column(BigInteger, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    user = relationship("User", back_populates="leave_requests")

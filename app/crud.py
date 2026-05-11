@@ -134,3 +134,49 @@ def get_attendance_logs_by_user(db: Session, user_id: int, skip: int = 0, limit:
 
 def get_attendance_log(db: Session, log_id: int):
     return db.query(models.AttendanceLog).filter(models.AttendanceLog.id == log_id).first()
+
+def create_leave_request(db: Session, leave: schemas.LeaveRequestCreate):
+    db_leave = models.LeaveRequest(
+        user_id=leave.user_id,
+        start_date=leave.start_date,
+        end_date=leave.end_date,
+        type=leave.type,
+        reason=leave.reason
+    )
+    db.add(db_leave)
+    db.commit()
+    db.refresh(db_leave)
+    return db_leave
+
+def get_leave_request(db: Session, request_id: int):
+    return db.query(models.LeaveRequest).filter(models.LeaveRequest.id == request_id).first()
+
+def get_leave_requests(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.LeaveRequest).offset(skip).limit(limit).all()
+
+def get_leave_requests_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.LeaveRequest).filter(models.LeaveRequest.user_id == user_id).offset(skip).limit(limit).all()
+
+def approve_leave_request(db: Session, request_id: int, approved_by: int):
+    db_leave = db.query(models.LeaveRequest).filter(models.LeaveRequest.id == request_id).first()
+    if db_leave:
+        db_leave.status = models.LeaveRequestStatus.approved
+        db_leave.approved_by = approved_by
+        db.commit()
+        db.refresh(db_leave)
+    return db_leave
+
+def reject_leave_request(db: Session, request_id: int):
+    db_leave = db.query(models.LeaveRequest).filter(models.LeaveRequest.id == request_id).first()
+    if db_leave:
+        db_leave.status = models.LeaveRequestStatus.rejected
+        db.commit()
+        db.refresh(db_leave)
+    return db_leave
+
+def delete_leave_request(db: Session, request_id: int):
+    db_leave = db.query(models.LeaveRequest).filter(models.LeaveRequest.id == request_id).first()
+    if db_leave:
+        db.delete(db_leave)
+        db.commit()
+    return db_leave

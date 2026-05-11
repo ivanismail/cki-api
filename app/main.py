@@ -101,3 +101,33 @@ def read_attendance_logs_by_user(user_id: int, skip: int = 0, limit: int = 100, 
 @app.get("/attendance_logs/{log_id}", response_model=schemas.AttendanceLog)
 def read_attendance_log(log_id: int, db: Session = Depends(get_db)):
     return crud.get_attendance_log(db, log_id=log_id)
+
+@app.post("/leave_requests/", response_model=schemas.LeaveRequest)
+def create_leave_request(leave: schemas.LeaveRequestCreate, db: Session = Depends(get_db)):
+    return crud.create_leave_request(db=db, leave=leave)
+
+@app.get("/leave_requests/", response_model=List[schemas.LeaveRequest])
+def read_leave_requests(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    requests = crud.get_leave_requests(db, skip=skip, limit=limit)
+    return requests
+
+@app.get("/leave_requests/user/{user_id}", response_model=List[schemas.LeaveRequest])
+def read_leave_requests_by_user(user_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    requests = crud.get_leave_requests_by_user(db, user_id=user_id, skip=skip, limit=limit)
+    return requests
+
+@app.get("/leave_requests/{request_id}", response_model=schemas.LeaveRequest)
+def read_leave_request(request_id: int, db: Session = Depends(get_db)):
+    return crud.get_leave_request(db, request_id=request_id)
+
+@app.put("/leave_requests/{request_id}/approve", response_model=schemas.LeaveRequest)
+def approve_leave_request(request_id: int, approved_by: int, db: Session = Depends(get_db)):
+    return crud.approve_leave_request(db=db, request_id=request_id, approved_by=approved_by)
+
+@app.put("/leave_requests/{request_id}/reject", response_model=schemas.LeaveRequest)
+def reject_leave_request(request_id: int, db: Session = Depends(get_db)):
+    return crud.reject_leave_request(db=db, request_id=request_id)
+
+@app.delete("/leave_requests/{request_id}")
+def delete_leave_request(request_id: int, db: Session = Depends(get_db)):
+    return crud.delete_leave_request(db=db, request_id=request_id)

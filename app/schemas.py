@@ -18,6 +18,16 @@ class AttendanceLogAction(str, Enum):
     check_in = "check_in"
     check_out = "check_out"
 
+class LeaveRequestType(str, Enum):
+    sick = "sick"
+    leave = "leave"
+    permission = "permission"
+
+class LeaveRequestStatus(str, Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
+
 class UserBase(BaseModel):
     name: str
     email: str
@@ -101,6 +111,29 @@ class AttendanceLogCreate(AttendanceLogBase):
     pass
 
 class AttendanceLog(AttendanceLogBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class LeaveRequestBase(BaseModel):
+    user_id: int
+    start_date: date
+    end_date: date
+    type: LeaveRequestType
+    reason: str
+    status: LeaveRequestStatus = LeaveRequestStatus.pending
+    approved_by: Optional[int] = None
+
+class LeaveRequestCreate(BaseModel):
+    user_id: int
+    start_date: date
+    end_date: date
+    type: LeaveRequestType
+    reason: str
+
+class LeaveRequest(LeaveRequestBase):
     id: int
     created_at: datetime
 
