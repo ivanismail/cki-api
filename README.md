@@ -1,6 +1,6 @@
 # Attendance API
 
-A FastAPI-based attendance system.
+A FastAPI-based attendance system with standardized responses and comprehensive error handling.
 
 ## Installation
 
@@ -30,22 +30,77 @@ A FastAPI-based attendance system.
 
 5. Run the server: `uvicorn app.main:app --reload` or use VS Code task "Run FastAPI Server"
 
+## Response Format
+
+All API responses follow a standardized format using `BaseResponse`:
+
+```json
+{
+  "success": true,
+  "message": "optional message",
+  "data": {}
+}
+```
+
+Error responses:
+
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "data": null
+}
+```
+
+## Exception Handling
+
+The API includes centralized exception handling that automatically wraps HTTPExceptions in the BaseResponse format for consistent error responses across all endpoints.
+
 ## API Endpoints
 
-- GET / : Welcome message
+### Authentication
+- POST /token : Login with credentials, returns access token
 
-- POST /users/ : Create a new user (JSON: {"name": "string", "email": "string"})
+### Users
+- POST /users/ : Create a new user
+- GET /users/ : List all users (paginated)
+- GET /users/me : Get current authenticated user
 
-- GET /users/ : List all users
+### Shifts
+- POST /shifts/ : Create a shift
+- GET /shifts/ : List all shifts (paginated)
+- GET /shifts/{shift_id} : Get shift by ID
 
-- POST /attendances/ : Check in (JSON: {"user_id": int})
+### User Shifts
+- POST /user_shifts/ : Assign shift to user
+- GET /user_shifts/ : List all user-shift assignments
+- GET /user_shifts/user/{user_id} : Get shifts for a user
+- GET /user_shifts/shift/{shift_id} : Get users for a shift
+- DELETE /user_shifts/{user_shift_id} : Remove user-shift assignment
 
-- PUT /attendances/{attendance_id}/check_out : Check out
+### Attendance
+- POST /attendances/ : Create attendance record (check-in)
+- GET /attendances/ : List all attendance records (paginated)
+- GET /attendances/{user_id}/{date} : Get attendance for user on specific date
+- PUT /attendances/{attendance_id}/check_out : Update attendance check-out
 
-- GET /attendances/ : List all attendances
+### Attendance Logs
+- POST /attendance_logs/ : Create attendance log
+- GET /attendance_logs/ : List all logs (paginated)
+- GET /attendance_logs/user/{user_id} : Get logs for specific user
+- GET /attendance_logs/{log_id} : Get specific log
+
+### Leave Requests
+- POST /leave_requests/ : Create leave request
+- GET /leave_requests/ : List all leave requests (paginated)
+- GET /leave_requests/user/{user_id} : Get leave requests for user
+- GET /leave_requests/{request_id} : Get specific leave request
+- PUT /leave_requests/{request_id}/approve : Approve leave request
+- PUT /leave_requests/{request_id}/reject : Reject leave request
+- DELETE /leave_requests/{request_id} : Delete leave request
 
 ## Database
 
-Uses SQLite database `attendance.db` created automatically.
+Uses SQLAlchemy ORM with support for MySQL and SQLite databases.
 
-Tables: users, attendances
+Tables: users, shifts, user_shifts, attendances, attendance_logs, leave_requests

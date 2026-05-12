@@ -1,8 +1,19 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Generic, TypeVar
 from datetime import datetime, time, date
 from enum import Enum
 from decimal import Decimal
+
+T = TypeVar('T')
+
+class BaseResponse(BaseModel, Generic[T]):
+    success: bool = True
+    message: Optional[str] = None
+    data: Optional[T] = None
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
 class RoleEnum(str, Enum):
     admin = "admin"
