@@ -99,6 +99,11 @@ def read_attendances(skip: int = 0, limit: int = 100, db: Session = Depends(get_
     attendances = crud.get_attendances(db, skip=skip, limit=limit)
     return schemas.BaseResponse(data=attendances)
 
+@app.get("/attendances/me/history", response_model=schemas.BaseResponse[List[schemas.Attendance]])
+def read_my_attendance_history(skip: int = 0, limit: int = 100, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
+    attendances = crud.get_attendances_by_user(db, user_id=current_user.id, skip=skip, limit=limit)
+    return schemas.BaseResponse(data=attendances)
+
 @app.get("/attendances/{user_id}/{date}", response_model=schemas.BaseResponse[schemas.Attendance])
 def read_attendance_by_user_date(user_id: int, date: str, db: Session = Depends(get_db)):
     from datetime import datetime as dt
@@ -112,6 +117,11 @@ def create_attendance_log(log: schemas.AttendanceLogCreate, db: Session = Depend
 @app.get("/attendance_logs/", response_model=schemas.BaseResponse[List[schemas.AttendanceLog]])
 def read_attendance_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     logs = crud.get_attendance_logs(db, skip=skip, limit=limit)
+    return schemas.BaseResponse(data=logs)
+
+@app.get("/attendance_logs/me/history", response_model=schemas.BaseResponse[List[schemas.AttendanceLog]])
+def read_my_attendance_logs_history(skip: int = 0, limit: int = 100, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
+    logs = crud.get_attendance_logs_by_user(db, user_id=current_user.id, skip=skip, limit=limit)
     return schemas.BaseResponse(data=logs)
 
 @app.get("/attendance_logs/user/{user_id}", response_model=schemas.BaseResponse[List[schemas.AttendanceLog]])

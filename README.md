@@ -59,19 +59,23 @@ The API includes centralized exception handling that automatically wraps HTTPExc
 ## API Endpoints
 
 ### Authentication
+
 - POST /token : Login with credentials, returns access token
 
 ### Users
+
 - POST /users/ : Create a new user
 - GET /users/ : List all users (paginated)
 - GET /users/me : Get current authenticated user
 
 ### Shifts
+
 - POST /shifts/ : Create a shift
 - GET /shifts/ : List all shifts (paginated)
 - GET /shifts/{shift_id} : Get shift by ID
 
 ### User Shifts
+
 - POST /user_shifts/ : Assign shift to user
 - GET /user_shifts/ : List all user-shift assignments
 - GET /user_shifts/user/{user_id} : Get shifts for a user
@@ -79,18 +83,23 @@ The API includes centralized exception handling that automatically wraps HTTPExc
 - DELETE /user_shifts/{user_shift_id} : Remove user-shift assignment
 
 ### Attendance
+
 - POST /attendances/ : Create attendance record (check-in)
 - GET /attendances/ : List all attendance records (paginated)
 - GET /attendances/{user_id}/{date} : Get attendance for user on specific date
+- GET /attendances/me/history : Get authenticated user's attendance history (paginated, requires token)
 - PUT /attendances/{attendance_id}/check_out : Update attendance check-out
 
 ### Attendance Logs
+
 - POST /attendance_logs/ : Create attendance log
 - GET /attendance_logs/ : List all logs (paginated)
 - GET /attendance_logs/user/{user_id} : Get logs for specific user
+- GET /attendance_logs/me/history : Get authenticated user's attendance logs history (paginated, requires token)
 - GET /attendance_logs/{log_id} : Get specific log
 
 ### Leave Requests
+
 - POST /leave_requests/ : Create leave request
 - GET /leave_requests/ : List all leave requests (paginated)
 - GET /leave_requests/user/{user_id} : Get leave requests for user

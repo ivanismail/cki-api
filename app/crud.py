@@ -85,6 +85,9 @@ def delete_user_shift(db: Session, user_shift_id: int):
 def get_attendances(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Attendance).offset(skip).limit(limit).all()
 
+def get_attendances_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Attendance).filter(models.Attendance.user_id == user_id).offset(skip).limit(limit).all()
+
 def create_attendance(db: Session, attendance: schemas.AttendanceCreate):
     db_attendance = models.Attendance(
         user_id=attendance.user_id,
