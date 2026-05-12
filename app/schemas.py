@@ -128,6 +128,18 @@ class AttendanceLog(AttendanceLogBase):
     class Config:
         orm_mode = True
 
+class CheckInRequest(BaseModel):
+    lat: Optional[Decimal] = None
+    lng: Optional[Decimal] = None
+    photo: Optional[str] = None
+    device_info: Optional[str] = None
+
+class CheckOutRequest(BaseModel):
+    lat: Optional[Decimal] = None
+    lng: Optional[Decimal] = None
+    photo: Optional[str] = None
+    device_info: Optional[str] = None
+
 class LeaveRequestBase(BaseModel):
     user_id: int
     start_date: date

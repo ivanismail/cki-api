@@ -110,6 +110,18 @@ def read_attendance_by_user_date(user_id: int, date: str, db: Session = Depends(
     attendance_date = dt.strptime(date, "%Y-%m-%d").date()
     return schemas.BaseResponse(data=crud.get_attendance_by_user_date(db, user_id=user_id, date_val=attendance_date))
 
+@app.post("/attendances/check-in", response_model=schemas.BaseResponse[schemas.Attendance])
+def check_in(request: schemas.CheckInRequest, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
+    attendance = crud.check_in(db=db, user_id=current_user.id, lat=request.lat, lng=request.lng, photo=request.photo, device_info=request.device_info)
+    return schemas.BaseResponse(data=attendance, message="Check-in successful")
+
+@app.post("/attendances/check-out", response_model=schemas.BaseResponse[schemas.Attendance])
+def check_out_endpoint(request: schemas.CheckOutRequest, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
+    attendance = crud.check_out(db=db, user_id=current_user.id, lat=request.lat, lng=request.lng, photo=request.photo, device_info=request.device_info)
+    if not attendance:
+        raise HTTPException(status_code=404, detail="No attendance record found for today")
+    return schemas.BaseResponse(data=attendance, message="Check-out successful")
+
 @app.post("/attendance_logs/", response_model=schemas.BaseResponse[schemas.AttendanceLog])
 def create_attendance_log(log: schemas.AttendanceLogCreate, db: Session = Depends(get_db)):
     return schemas.BaseResponse(data=crud.create_attendance_log(db=db, log=log))

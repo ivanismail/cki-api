@@ -56,6 +56,21 @@ Error responses:
 
 The API includes centralized exception handling that automatically wraps HTTPExceptions in the BaseResponse format for consistent error responses across all endpoints.
 
+## Check-in/Check-out Workflow
+
+### Check-in Process
+When a user checks in:
+1. An attendance log entry is created with `action: check_in`
+2. An attendance record is created for the day (if not already exists)
+3. The record is populated with `check_in` timestamp and location data
+
+### Check-out Process
+When a user checks out:
+1. An attendance log entry is created with `action: check_out`
+2. The today's attendance record is updated with `check_out` timestamp and location data
+
+Both operations require authentication token and support optional location (lat/lng), photo, and device information.
+
 ## API Endpoints
 
 ### Authentication
@@ -85,6 +100,10 @@ The API includes centralized exception handling that automatically wraps HTTPExc
 ### Attendance
 
 - POST /attendances/ : Create attendance record (check-in)
+- POST /attendances/check-in : Check-in with location and photo (requires token)
+  - Body: `{"lat": float, "lng": float, "photo": string, "device_info": string}`
+- POST /attendances/check-out : Check-out with location and photo (requires token)
+  - Body: `{"lat": float, "lng": float, "photo": string, "device_info": string}`
 - GET /attendances/ : List all attendance records (paginated)
 - GET /attendances/{user_id}/{date} : Get attendance for user on specific date
 - GET /attendances/me/history : Get authenticated user's attendance history (paginated, requires token)

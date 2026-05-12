@@ -196,3 +196,81 @@ def delete_leave_request(db: Session, request_id: int):
         db.delete(db_leave)
         db.commit()
     return db_leave
+
+def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, photo: str = None, device_info: str = None):
+    now = datetime.datetime.utcnow()
+    today = now.date()
+    
+    # Insert attendance log
+    db_log = models.AttendanceLog(
+        user_id=user_id,
+        action=models.AttendanceLogAction.check_in,
+        time=now,
+        lat=lat,
+        lng=lng,
+        device_info=device_info
+    )
+    db.add(db_log)
+    
+    # Check if attendance record exists for today
+    existing_attendance = db.query(models.Attendance).filter(
+        models.Attendance.user_id == user_id,
+        models.Attendance.date == today
+    ).first()
+    
+    if existing_attendance:
+        # Update check_in if not already set
+        if not existing_attendance.check_in:
+            existing_attendance.check_in = now
+            existing_attendance.check_in_lat = lat
+            existing_attendance.check_in_lng = lng
+            existing_attendance.check_in_photo = photo
+        db.commit()
+        db.refresh(existing_attendance)
+        return existing_attendance
+    else:
+        # Create new attendance record
+        db_attendance = models.Attendance(
+            user_id=user_id,
+            date=today,
+            check_in=now,
+            check_in_lat=lat,
+            check_in_lng=lng,
+            check_in_photo=photo,
+            status=models.AttendanceStatus.present
+        )
+        db.add(db_attendance)
+        db.commit()
+        db.refresh(db_attendance)
+        return db_attendance
+
+def check_out(db: Session, user_id: int, lat: float = None, lng: float = None, photo: str = None, device_info: str = None):
+    now = datetime.datetime.utcnow()
+    today = now.date()
+    
+    # Insert attendance log
+    db_log = models.AttendanceLog(
+        user_id=user_id,
+        action=models.AttendanceLogAction.check_out,
+        time=now,
+        lat=lat,
+        lng=lng,
+        device_info=device_info
+    )
+    db.add(db_log)
+    
+    # Get today's attendance record
+    db_attendance = db.query(models.Attendance).filter(
+        models.Attendance.user_id == user_id,
+        models.Attendance.date == today
+    ).first()
+    
+    if db_attendance:
+        db_attendance.check_out = now
+        db_attendance.check_out_lat = lat
+        db_attendance.check_out_lng = lng
+        db_attendance.check_out_photo = photo
+        db.commit()
+        db.refresh(db_attendance)
+    
+    return db_attendance
