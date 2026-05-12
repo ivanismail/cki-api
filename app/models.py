@@ -85,6 +85,8 @@ class Attendance(Base):
     check_out_lng = Column(Numeric(10, 6), nullable=True)
     check_in_photo = Column(String(255), nullable=True)
     check_out_photo = Column(String(255), nullable=True)
+    check_in_address = Column(String(255), nullable=True)
+    check_out_address = Column(String(255), nullable=True)
     note = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
@@ -100,6 +102,7 @@ class AttendanceLog(Base):
     lat = Column(Numeric(10, 6), nullable=True)
     lng = Column(Numeric(10, 6), nullable=True)
     device_info = Column(String(255), nullable=True)
+    address = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", back_populates="attendance_logs")

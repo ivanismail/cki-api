@@ -101,6 +101,8 @@ def create_attendance(db: Session, attendance: schemas.AttendanceCreate):
         check_out_lng=attendance.check_out_lng,
         check_in_photo=attendance.check_in_photo,
         check_out_photo=attendance.check_out_photo,
+        check_in_address=attendance.check_in_address,
+        check_out_address=attendance.check_out_address,
         note=attendance.note
     )
     db.add(db_attendance)
@@ -135,6 +137,7 @@ def create_attendance_log(db: Session, log: schemas.AttendanceLogCreate):
         time=log.time,
         lat=log.lat,
         lng=log.lng,
+        address=log.address,
         device_info=log.device_info
     )
     db.add(db_log)
@@ -197,7 +200,7 @@ def delete_leave_request(db: Session, request_id: int):
         db.commit()
     return db_leave
 
-def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, photo: str = None, device_info: str = None):
+def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, photo: str = None, device_info: str = None, address: str = None):
     now = datetime.datetime.utcnow()
     today = now.date()
     
@@ -208,6 +211,7 @@ def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, ph
         time=now,
         lat=lat,
         lng=lng,
+        address=address,
         device_info=device_info
     )
     db.add(db_log)
@@ -225,6 +229,7 @@ def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, ph
             existing_attendance.check_in_lat = lat
             existing_attendance.check_in_lng = lng
             existing_attendance.check_in_photo = photo
+            existing_attendance.check_in_address = address
         db.commit()
         db.refresh(existing_attendance)
         return existing_attendance
@@ -237,6 +242,7 @@ def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, ph
             check_in_lat=lat,
             check_in_lng=lng,
             check_in_photo=photo,
+            check_in_address = address,
             status=models.AttendanceStatus.present
         )
         db.add(db_attendance)
@@ -244,7 +250,7 @@ def check_in(db: Session, user_id: int, lat: float = None, lng: float = None, ph
         db.refresh(db_attendance)
         return db_attendance
 
-def check_out(db: Session, user_id: int, lat: float = None, lng: float = None, photo: str = None, device_info: str = None):
+def check_out(db: Session, user_id: int, lat: float = None, lng: float = None, photo: str = None, device_info: str = None, address: str = None):
     now = datetime.datetime.utcnow()
     today = now.date()
     
@@ -255,7 +261,8 @@ def check_out(db: Session, user_id: int, lat: float = None, lng: float = None, p
         time=now,
         lat=lat,
         lng=lng,
-        device_info=device_info
+        device_info=device_info,
+        address=address
     )
     db.add(db_log)
     
@@ -270,6 +277,7 @@ def check_out(db: Session, user_id: int, lat: float = None, lng: float = None, p
         db_attendance.check_out_lat = lat
         db_attendance.check_out_lng = lng
         db_attendance.check_out_photo = photo
+        db_attendance.check_out_address = address
         db.commit()
         db.refresh(db_attendance)
     

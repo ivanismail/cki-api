@@ -112,12 +112,12 @@ def read_attendance_by_user_date(user_id: int, date: str, db: Session = Depends(
 
 @app.post("/attendances/check-in", response_model=schemas.BaseResponse[schemas.Attendance])
 def check_in(request: schemas.CheckInRequest, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
-    attendance = crud.check_in(db=db, user_id=current_user.id, lat=request.lat, lng=request.lng, photo=request.photo, device_info=request.device_info)
+    attendance = crud.check_in(db=db, user_id=current_user.id, lat=request.lat, lng=request.lng, photo=request.photo, device_info=request.device_info, address=request.address)
     return schemas.BaseResponse(data=attendance, message="Check-in successful")
 
 @app.post("/attendances/check-out", response_model=schemas.BaseResponse[schemas.Attendance])
 def check_out_endpoint(request: schemas.CheckOutRequest, current_user: models.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
-    attendance = crud.check_out(db=db, user_id=current_user.id, lat=request.lat, lng=request.lng, photo=request.photo, device_info=request.device_info)
+    attendance = crud.check_out(db=db, user_id=current_user.id, lat=request.lat, lng=request.lng, photo=request.photo, device_info=request.device_info, address=request.address)
     if not attendance:
         raise HTTPException(status_code=404, detail="No attendance record found for today")
     return schemas.BaseResponse(data=attendance, message="Check-out successful")

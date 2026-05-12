@@ -98,6 +98,8 @@ class AttendanceBase(BaseModel):
     check_out_lng: Optional[Decimal] = None
     check_in_photo: Optional[str] = None
     check_out_photo: Optional[str] = None
+    check_in_address: Optional[str] = None
+    check_out_address: Optional[str] = None
     note: Optional[str] = None
 
 class AttendanceCreate(AttendanceBase):
@@ -117,6 +119,7 @@ class AttendanceLogBase(BaseModel):
     lat: Optional[Decimal] = None
     lng: Optional[Decimal] = None
     device_info: Optional[str] = None
+    address: Optional[str] = None
 
 class AttendanceLogCreate(AttendanceLogBase):
     pass
@@ -132,12 +135,14 @@ class CheckInRequest(BaseModel):
     lat: Optional[Decimal] = None
     lng: Optional[Decimal] = None
     photo: Optional[str] = None
+    address: Optional[str] = None
     device_info: Optional[str] = None
 
 class CheckOutRequest(BaseModel):
     lat: Optional[Decimal] = None
     lng: Optional[Decimal] = None
     photo: Optional[str] = None
+    address: Optional[str] = None
     device_info: Optional[str] = None
 
 class LeaveRequestBase(BaseModel):
