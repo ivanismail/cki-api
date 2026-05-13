@@ -5,12 +5,19 @@ from typing import List
 from . import crud, models, schemas, auth, exception
 from .database import SessionLocal, engine
 from .file import save_base64_image
+from fastapi.staticfiles import StaticFiles
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Attendance API", description="API for attendance system")
 
 app.add_exception_handler(HTTPException, exception.http_exception_handler)
+
+app.mount(
+    "/images",
+    StaticFiles(directory="/var/www/html/cki-api/images"),
+    name="images"
+)
 
 def get_db():
     db = SessionLocal()
