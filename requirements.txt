@@ -5,3 +5,5 @@ alembic
 pydantic
 python-dotenv
 pymysql
+python-jose[cryptography]
+passlib[bcrypt]
